@@ -61,16 +61,7 @@ namespace Albacore.ViVeTool.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Boot store changes require a reboot to fully take effect, please do so if a configuration appears to be missing.
-        /// </summary>
-        internal static string BootStoreRebootTip {
-            get {
-                return ResourceManager.GetString("BootStoreRebootTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ViVeTool v0.3.1 - Windows feature configuration tool
+        ///   Looks up a localized string similar to ViVeTool v0.3.0 - Windows feature configuration tool
         ///.
         /// </summary>
         internal static string Branding {
@@ -401,8 +392,10 @@ namespace Albacore.ViVeTool.Properties {
         ///You can specify feature IDs or names to filter the query results, in this case only
         ///the override with the highest priority will be displayed.
         ///
-        ///Boot store queries reflect the state on system startup, if you&apos;ve made any changes
-        ///to it since, a reboot is required for them to show up in the output. This is intend [rest of string was truncated]&quot;;.
+        ///Examples:
+        ///  /query
+        ///  /query /store:boot /id:12345678
+        ///  /query /store:runtime /name:TIFE,STTest.
         /// </summary>
         internal static string Help_Query {
             get {
