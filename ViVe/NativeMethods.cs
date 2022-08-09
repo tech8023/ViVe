@@ -1,6 +1,6 @@
 ﻿/*
-    ViVe - Windows feature configuration library
-    Copyright (C) 2019-2022  @thebookisclosed
+    ViVe - Vibranium feature configuration library
+    Copyright (C) 2019  @thebookisclosed
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,65 +16,53 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-using Albacore.ViVe.NativeEnums;
-using Albacore.ViVe.NativeStructs;
 using System;
 using System.Runtime.InteropServices;
 
-namespace Albacore.ViVe.NativeMethods
+namespace Albacore.ViVe
 {
     public delegate void FeatureConfigurationChangeCallback(IntPtr Context);
 
-    public static class Ntdll
+    public static class NativeMethods
     {
-        // Kernel supports null pointer for change stamp ref, unlike single feature query
         [DllImport("ntdll.dll")]
-        public unsafe static extern int RtlQueryAllFeatureConfigurations(
-            RTL_FEATURE_CONFIGURATION_TYPE featureConfigurationType,
-            ulong* changeStamp,
-            RTL_FEATURE_CONFIGURATION* featureConfigurations,
-            out int featureConfigurationCount
+        public static extern int RtlQueryAllFeatureConfigurations(
+            FeatureConfigurationSection sectionType,
+            ref ulong changeStamp,
+            IntPtr buffer,
+            ref int featureCount
             );
 
         [DllImport("ntdll.dll")]
         public static extern int RtlQueryFeatureConfiguration(
             uint featureId,
-            RTL_FEATURE_CONFIGURATION_TYPE featureConfigurationType,
+            FeatureConfigurationSection sectionType,
             ref ulong changeStamp,
-            out RTL_FEATURE_CONFIGURATION featureConfiguration
+            IntPtr buffer
             );
 
         [DllImport("ntdll.dll")]
         public static extern ulong RtlQueryFeatureConfigurationChangeStamp();
 
         [DllImport("ntdll.dll")]
-        public unsafe static extern int RtlQueryFeatureUsageNotificationSubscriptions(
-            RTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS* subscriptions,
-            out int subscriptionCount
+        public static extern int RtlQueryFeatureUsageNotificationSubscriptions(
+            IntPtr buffer,
+            ref int subscriptionCount
             );
 
-        // Kernel treats pointer to 0 the same as a null pointer, no alternate signature required
         [DllImport("ntdll.dll")]
         public static extern int RtlSetFeatureConfigurations(
-            ref ulong previousChangeStamp,
-            RTL_FEATURE_CONFIGURATION_TYPE featureConfigurationType,
-            RTL_FEATURE_CONFIGURATION_UPDATE[] featureConfigurations,
-            int featureConfigurationCount
+            ref ulong changeStamp,
+            FeatureConfigurationSection sectionType,
+            byte[] buffer,
+            int featureCount
             );
 
         [DllImport("ntdll.dll")]
         public static extern int RtlRegisterFeatureConfigurationChangeNotification(
             FeatureConfigurationChangeCallback callback,
             IntPtr context,
-            IntPtr waitForChangeStamp,
-            out IntPtr subscription
-            );
-
-        [DllImport("ntdll.dll")]
-        public static extern int RtlRegisterFeatureConfigurationChangeNotification(
-            FeatureConfigurationChangeCallback callback,
-            IntPtr context,
-            ref ulong waitForChangeStamp,
+            IntPtr unknown,
             out IntPtr subscription
             );
 
@@ -85,36 +73,35 @@ namespace Albacore.ViVe.NativeMethods
 
         [DllImport("ntdll.dll")]
         public static extern int RtlSubscribeForFeatureUsageNotification(
-            RTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS[] subscriptions,
+            byte[] buffer,
             int subscriptionCount
             );
 
         [DllImport("ntdll.dll")]
         public static extern int RtlUnsubscribeFromFeatureUsageNotifications(
-            RTL_FEATURE_USAGE_SUBSCRIPTION_DETAILS[] subscriptions,
+            byte[] buffer,
             int subscriptionCount
             );
 
         [DllImport("ntdll.dll")]
         public static extern int RtlNotifyFeatureUsage(
-            ref RTL_FEATURE_USAGE_REPORT report
+            byte[] buffer
             );
 
-        // BSD Items can have varying sizes, int signature is enough for our needs though
         [DllImport("ntdll.dll")]
         public static extern int RtlSetSystemBootStatus(
-            int bsdItemType,
-            ref int data,
-            int dataLength,
-            IntPtr returnLength
+            int infoClass,
+            ref int state,
+            int stateSize,
+            IntPtr output
             );
 
         [DllImport("ntdll.dll")]
         public static extern int RtlGetSystemBootStatus(
-            int bsdItemType,
-            out int data,
-            int dataLength,
-            IntPtr returnLength
+            int infoClass,
+            ref int state,
+            int stateSize,
+            IntPtr output
             );
     }
 }
